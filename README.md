@@ -23,7 +23,7 @@ Develop a regression model capable of accurately estimating the carbon footprint
 │       ├── plots.py        <- Custom visualizations
 │       ├── home.py         <- Streamlit application
 │       └── models.py       <- scikit-learn modeling logic
-├── references          <- Data dictionaries and extra documentation
+├── [references](references/01_data_dictionary.md)          <- Data # data dictionary and extra documentation
 └── reports             <- Generated reports and exported images
 ```
 
