@@ -1,4 +1,10 @@
+"""
+Module for building, training, and validating regression models.
+Uses scikit-learn pipelines to integrate preprocessing and estimators.
+"""
+
 import pandas as pd
+
 
 from sklearn.compose import TransformedTargetRegressor
 from sklearn.model_selection import KFold, cross_validate, GridSearchCV
@@ -7,9 +13,20 @@ from sklearn.pipeline import Pipeline
 RANDOM_STATE = 42
 
 
-def construir_pipeline_modelo_regressao(
+def build_regression_model_pipeline(
     regressor, preprocessor=None, target_transformer=None
 ):
+    """
+    Builds a scikit-learn pipeline or a TransformedTargetRegressor.
+
+    Args:
+        regressor (estimator): Base estimator (e.g., Ridge, Lasso, XGBoost).
+        preprocessor (transformer, optional): ColumnTransformer for preprocessing.
+        target_transformer (transformer, optional): Transformer for the target variable (e.g., Quantile).
+
+    Returns:
+        object: Configured Pipeline or TransformedTargetRegressor.
+    """
     if preprocessor is not None:
         pipeline = Pipeline([("preprocessor", preprocessor), ("reg", regressor)])
     else:
@@ -24,7 +41,7 @@ def construir_pipeline_modelo_regressao(
     return model
 
 
-def treinar_e_validar_modelo_regressao(
+def train_and_validate_regression_model(
     X,
     y,
     regressor,
@@ -33,8 +50,23 @@ def treinar_e_validar_modelo_regressao(
     n_splits=5,
     random_state=RANDOM_STATE,
 ):
+    """
+    Executes cross-validation for a configured model.
 
-    model = construir_pipeline_modelo_regressao(
+    Args:
+        X (pd.DataFrame): Explanatory variables.
+        y (pd.Series/array): Target.
+        regressor (estimator): Base estimator.
+        preprocessor (transformer, optional): Preprocessor.
+        target_transformer (transformer, optional): Target transformer.
+        n_splits (int, optional): Number of folds in KFold. Defaults to 5.
+        random_state (int, optional): Random seed. Defaults to RANDOM_STATE.
+
+    Returns:
+        dict: Dictionary with R2, MAE, and RMSE scores from cross-validation.
+    """
+
+    model = build_regression_model_pipeline(
         regressor, preprocessor, target_transformer
     )
 
@@ -55,7 +87,7 @@ def treinar_e_validar_modelo_regressao(
     return scores
 
 
-def grid_search_cv_regressor(
+def run_grid_search_cv(
     regressor,
     param_grid,
     preprocessor=None,
@@ -64,7 +96,23 @@ def grid_search_cv_regressor(
     random_state=RANDOM_STATE,
     return_train_score=False,
 ):
-    model = construir_pipeline_modelo_regressao(
+    """
+    Configures and returns a GridSearchCV object for hyperparameter optimization.
+
+    Args:
+        regressor (estimator): Base estimator.
+        param_grid (dict): Parameter grid for search.
+        preprocessor (transformer, optional): Preprocessor.
+        target_transformer (transformer, optional): Target transformer.
+        n_splits (int, optional): Number of folds. Defaults to 5.
+        random_state (int, optional): Random seed. Defaults to RANDOM_STATE.
+        return_train_score (bool, optional): If True, includes training scores. Defaults to False.
+
+    Returns:
+        GridSearchCV: Configured object for parameter space search.
+    """
+
+    model = build_regression_model_pipeline(
         regressor, preprocessor, target_transformer
     )
 
@@ -84,24 +132,34 @@ def grid_search_cv_regressor(
     return grid_search
 
 
-def organiza_resultados(resultados):
+def organize_results(results):
+    """
+    Transforms the cross-validation results dictionary into a formatted DataFrame.
 
-    for chave, valor in resultados.items():
-        resultados[chave]["time_seconds"] = (
-            resultados[chave]["fit_time"] + resultados[chave]["score_time"]
+    Args:
+        results (dict): Dictionary containing metrics from multiple models.
+
+    Returns:
+        pd.DataFrame: "Exploded" DataFrame (one row per fold/model) with numeric columns.
+    """
+
+    for key, value in results.items():
+        results[key]["time_seconds"] = (
+            results[key]["fit_time"] + results[key]["score_time"]
         )
 
-    df_resultados = (
-        pd.DataFrame(resultados).T.reset_index().rename(columns={"index": "model"})
+    df_results = (
+        pd.DataFrame(results).T.reset_index().rename(columns={"index": "model"})
     )
 
-    df_resultados_expandido = df_resultados.explode(
-        df_resultados.columns[1:].to_list()
+    df_results_exploded = df_results.explode(
+        df_results.columns[1:].to_list()
     ).reset_index(drop=True)
 
     try:
-        df_resultados_expandido = df_resultados_expandido.apply(pd.to_numeric)
+        df_results_exploded = df_results_exploded.apply(pd.to_numeric)
     except ValueError:
         pass
 
-    return df_resultados_expandido
+    return df_results_exploded
+

@@ -1,86 +1,77 @@
-# Modelo de projeto de ciência de dados
+# CO2 Emissions Prediction - Canada (2005-2024)
 
-Modelo de projeto de ciência de dados para ser utilizado como referência em projetos
-futuros. Desenvolvido por mim, [Francisco Bustamante](https://github.com/chicolucio),
-para alunos iniciantes em ciência de dados de meus cursos e mentorias.
+![CO2 Emissions Prediction - Canada](reports/co2_emissions_banner.png)
 
-Inspiração: [Cookiecutter Data Science](https://drivendata.github.io/cookiecutter-data-science/)
+This project uses historical data of vehicles sold in Canada between 2005 and 2024 to predict CO2 emissions (g/km) based on technical specifications such as engine size, number of cylinders, transmission type, and fuel consumption.
 
-Clique no botão **Use this template** para criar um novo repositório com base neste modelo.
+## 📊 Project Objective
 
-## Organização do projeto
+Develop a regression model capable of accurately estimating the carbon footprint of light vehicles, facilitating the analysis of energy efficiency and the environmental impact of different vehicle categories and fuel technologies.
 
-```
-├── .env               <- Arquivo de variáveis de ambiente (não versionar)
-├── .gitignore         <- Arquivos e diretórios a serem ignorados pelo Git
-├── ambiente.yml       <- O arquivo de requisitos para reproduzir o ambiente de análise
-├── LICENSE            <- Licença de código aberto se uma for escolhida
-├── README.md          <- README principal para desenvolvedores que usam este projeto.
-|
-├── dados              <- Arquivos de dados para o projeto.
-|
-├── modelos            <- Modelos treinados e serializados, previsões de modelos ou resumos de modelos
-|
-├── notebooks          <- Cadernos Jupyter. A convenção de nomenclatura é um número (para ordenação),
-│                         as iniciais do criador e uma descrição curta separada por `-`, por exemplo
-│                         `01-fb-exploracao-inicial-de-dados`.
-│
-|   └──src             <- Código-fonte para uso neste projeto.
-|      │
-|      ├── __init__.py  <- Torna um módulo Python
-|      ├── config.py    <- Configurações básicas do projeto
-|      └── graficos.py  <- Scripts para criar visualizações exploratórias e orientadas a resultados
-|
-├── referencias        <- Dicionários de dados, manuais e todos os outros materiais explicativos.
-|
-├── relatorios         <- Análises geradas em HTML, PDF, LaTeX, etc.
-│   └── imagens        <- Gráficos e figuras gerados para serem usados em relatórios
+## 🗂️ Project Organization
+
+```text
+├── data                <- Data files (original CSVs and processed Parquets)
+├── models              <- Trained serialized models (.joblib)
+├── notebooks           <- Experiments and exploratory analyses
+│   ├── 01-el-bases.ipynb         <- Data consolidation and initial cleaning
+│   ├── 02-el-eda.ipynb           <- Exploratory Analysis and Processing
+│   ├── 03-el-models.ipynb        <- Model Training and Selection
+│   └── src             <- Modularized source code
+│       ├── helpers.py      <- Support functions
+│       ├── config.py       <- Path configurations
+│       ├── plots.py        <- Custom visualizations
+│       ├── home.py         <- Streamlit application
+│       └── models.py       <- scikit-learn modeling logic
+├── references          <- Data dictionaries and extra documentation
+└── reports             <- Generated reports and exported images
 ```
 
-## Configuração do ambiente
+## 🛠️ Environment Configuration
 
-1. Faça o clone do repositório que será criado a partir deste modelo.
+The project uses the `uv` package manager to ensure reproducibility and performance.
 
+1.  **Clone the repository**:
     ```bash
-    git clone ENDERECO_DO_REPOSITORIO
+    git clone https://github.com/elossio/CO2_emissions.git
+    cd CO2_emissions
     ```
 
-2. Crie um ambiente virtual para o seu projeto utilizando o gerenciador de ambientes de sua preferência.
+2.  **Create and synchronize the environment**:
+    ```bash
+    uv sync
+    ```
 
-    a. Caso esteja utilizando o `conda`, exporte as dependências do ambiente para o arquivo `ambiente.yml`:
+3.  **Environment Variables**:
+    Rename the `.env.example` file to `.env` if you need to configure custom paths (optional, already configured via `config.py`).
 
-      ```bash
-      conda env export > ambiente.yml
-      ```
+## 🚀 How to Use
 
-    b. Caso esteja utilizando outro gerenciador de ambientes, exporte as dependências
-    para o arquivo `requirements.txt` ou outro formato de sua preferência. Adicione o
-    arquivo ao controle de versão, removendo o arquivo `ambiente.yml`.
+### 1. Interactive Application (Dashboard)
+The easiest way to explore the data and obtain predictions is through our Streamlit application:
+```bash
+uv run streamlit run notebooks/src/home.py
+```
 
-3. Verifique o arquivo `notebooks/01-fb-exemplo.ipynb` para exemplos
-de uso do código.
-4. Renomeie o arquivo `notebooks/01-fb-exemplo.ipynb` para um nome
-mais apropriado ao seu projeto. E siga a convenção de nomenclatura para os demais
-notebooks.
-5. Remova arquivos de exemplo e adicione os arquivos de dados e notebooks do seu
-projeto.
-6. Verifique o arquivo `notebooks/src/config.py` para configurações básicas do projeto.
-Modifique conforme necessário, adicionando ou removendo caminhos de arquivos e
-diretórios.
-7. Atualize o arquivo `referencias/01_dicionario_de_dados.md` com o dicionário de dados
-do seu projeto.
-8. Atualize o `README.md` com informações sobre o seu projeto.
-9. Adicione uma licença ao projeto. Clique
-[aqui](https://docs.github.com/pt/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
-se precisar de ajuda para escolher uma licença.
-10. Renomeie o arquivo `.env.exemplo` para `.env`
-11. Adicione variáveis de ambiente sensíveis ao arquivo `.env`.
+### 2. Development Notebooks
+To understand the details of the analysis and model training:
+- `01-el-bases.ipynb`: Data loading and consolidation.
+- `02-el-eda.ipynb`: Check the patterns discovered in the data and emission trends by year and manufacturer.
+- `03-el-models.ipynb`: Replicate the **Ridge Regression** model training with the best set of hyperparameters.
 
-Por padrão, o arquivo `.gitignore` já está configurado para ignorar arquivos de dados e
-arquivos de Notebook (para aqueles que usam ferramentas como
-[Jupytext](https://jupytext.readthedocs.io/en/latest/) e similares). Adicione ou remova
-outros arquivos e diretórios do `.gitignore` conforme necessário. Caso deseje adicionar
-forçadamente um Notebook ao controle de versão, faça um commit forçado com o
-comando `git add --force NOME_DO_ARQUIVO.ipynb`.
+## 🧰 Main Technologies
 
-Para mais informações sobre como usar Git e GitHub, [clique aqui](https://cienciaprogramada.com.br/2021/09/guia-definitivo-git-github/). Sobre ambientes virtuais, [clique aqui](https://cienciaprogramada.com.br/2020/08/ambiente-virtual-projeto-python/).
+- **Language**: Python 3.13+
+- **Processing**: Pandas, NumPy
+- **Machine Learning**: Scikit-Learn, XGBoost, LightGBM
+- **Visualization**: Matplotlib, Seaborn, Plotly
+- **Interface**: Streamlit
+- **Management**: uv
+
+## 📄 License
+
+This project is under the [MIT](LICENSE) license.
+
+---
+*Developed as a practical project for data analysis and predictive modeling.*
+
